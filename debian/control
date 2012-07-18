@@ -1,0 +1,11 @@
+Source: dlr
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 7)
+Build-Depends-Indep: perl
+Maintainer: Tom Jones <tom@oxix.org>
+
+Package: dlr
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends}
+Description: delay the running of a program by a random amount of time
