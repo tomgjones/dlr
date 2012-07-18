@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+dlr - delay the running of a program by a random amount of time
+
+=head1 SYNOPSIS
+
+  dlr T PROG [ARGS ...]
+
+=head1 DESCRIPTION
+
+After a random delay of between zero and T seconds, dlr execs PROG
+with arguments ARGS.  The probability distribution between zero and T
+is uniform.  T does not have to be a whole number of seconds.
+
+=head1 EXAMPLES
+
+  dlr 0.1 echo slept for up to a tenth of a second
+
+=cut
+
+use strict;
+
+use Pod::Usage;
+use Readonly;
+use Time::HiRes qw(nanosleep);
+
+# From Linux's syserr.h
+Readonly my $ERR_USAGE => 64;
+
+my ($t, $prog, @args) = @ARGV;
+
+defined($t) or pod2usage(-exitval => $ERR_USAGE, -message => "T is missing");
+defined($prog) or pod2usage(
+    -exitval => $ERR_USAGE, -message => "PROG is missing"
+);
+
+my $nanoseconds = $t * 1e9 * rand();
+nanosleep($nanoseconds);
+
+# Don't do exec($prog, @args) as then you risk shell interpretation if there
+# are no @args.
+my @argv = ($prog, @args);
+exec $prog ($prog, @args) or die "exec: $!: $prog\n";
